@@ -1,0 +1,4 @@
+Steve;Jobs;via Cupertino 13;0612344;56
+Bill;Gates;via Redmond 10;06688989;60
+Babbo;Natale;via Redmond 10;06688989;60
+Luca;Ammendola;via Prota 79;3392428375;29
