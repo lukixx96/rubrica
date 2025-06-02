@@ -12,13 +12,13 @@ public class MainWindow extends JFrame {
     private DefaultTableModel model;
     private JPanel buttonPanel;
     private Rubrica rubrica;
-    private static final String FILE_PATH = "informazioni.txt";
+    //private static final String FILE_PATH = "informazioni.txt";
 
     public MainWindow() {
 
         rubrica = Rubrica.getInstance();
         try{
-            rubrica.setRubrica( RubricaDAO.loadFromFile( FILE_PATH ) );
+            rubrica.setRubrica( RubricaDAO.loadFromFolder(  ) );
         } catch (IOException e) {
             return;
         }
@@ -129,7 +129,7 @@ public class MainWindow extends JFrame {
             model.addRow( row );
         }
         try{
-            RubricaDAO.saveToFile( FILE_PATH, rubrica.getRubrica() );
+            RubricaDAO.saveAllToFolder( rubrica.getRubrica() );
         } catch (IOException e) {
             return;
         }
