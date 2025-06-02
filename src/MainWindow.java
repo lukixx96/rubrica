@@ -10,12 +10,18 @@ public class MainWindow extends JFrame {
     private JTable tabellaRubrica;
     private DefaultTableModel model;
     private Rubrica rubrica;
+    private DatabaseConfig config;
+    private RubricaMySQLAdapter sqlAdapter;
 
     public MainWindow() {
 
         rubrica = Rubrica.getInstance();
         try {
-            rubrica.setRubrica(RubricaDAO.loadFromFolder());
+            //rubrica.setRubrica(RubricaDAO.loadFromFolder());
+            config = new DatabaseConfig( "credenziali_database.properties" );
+            //config = new DatabaseConfig( "C:\\Users\\Lukixx\\IdeaProjects\\Rubrica\\credenziali_database.properties" );
+            sqlAdapter = new RubricaMySQLAdapter( config );
+            rubrica.caricaDaDB( sqlAdapter );
         } catch (IOException e) {
             return;
         }
@@ -128,12 +134,14 @@ public class MainWindow extends JFrame {
                     p.getEta()
             };
             model.addRow(row);
-        }
+        }/*
         try {
             RubricaDAO.saveAllToFolder(rubrica.getRubrica());
         } catch (IOException e) {
             return;
-        }
+        }*/
+        rubrica.salvaSuDB( sqlAdapter );
+
     }
 
     /*

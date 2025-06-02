@@ -36,7 +36,7 @@ public class Rubrica {
         this.rubrica = rubrica;
     }
 
-    public int getIndexPersona(Persona p ) {
+    public int getIndexPersona( Persona p ) {
         return instance.rubrica.indexOf( p );
     }
 
@@ -57,5 +57,13 @@ public class Rubrica {
         temp.setTelefono( telefono );
         temp.setEta( eta );
     };
+
+    public void caricaDaDB(RubricaMySQLAdapter adapter) {
+        this.rubrica = adapter.caricaPersone();
+    }
+
+    public void salvaSuDB(RubricaMySQLAdapter adapter) {
+        adapter.salvaPersone(this.rubrica);
+    }
 
 }
