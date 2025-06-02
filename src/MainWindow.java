@@ -9,115 +9,117 @@ public class MainWindow extends JFrame {
 
     private JTable tabellaRubrica;
     private DefaultTableModel model;
-    private JPanel buttonPanel;
     private Rubrica rubrica;
-    //private static final String FILE_PATH = "informazioni.txt";
 
     public MainWindow() {
 
         rubrica = Rubrica.getInstance();
-        try{
-            rubrica.setRubrica( RubricaDAO.loadFromFolder(  ) );
+        try {
+            rubrica.setRubrica(RubricaDAO.loadFromFolder());
         } catch (IOException e) {
             return;
         }
 
-        setTitle( "Gestione Rubrica" );
-        setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-        setExtendedState( JFrame.MAXIMIZED_BOTH ); // tutto schermo
+        setTitle("Gestione Rubrica");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setExtendedState(JFrame.MAXIMIZED_BOTH); // tutto schermo
 
         // SETTING TABELLA
         String[] fields = { "Nome", "Cognome", "Indirizzo", "Telefono", "Età" };
-        model = new DefaultTableModel( fields, 0 );
-        tabellaRubrica = new JTable( model );
-        tabellaRubrica.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+        model = new DefaultTableModel(fields, 0);
+        tabellaRubrica = new JTable(model);
+        tabellaRubrica.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tabellaRubrica.setRowHeight(30);
-        JScrollPane scrollPane = new JScrollPane( tabellaRubrica );
+        JScrollPane scrollPane = new JScrollPane(tabellaRubrica);
 
-        // PANNELLO BOTTONI
-        buttonPanel = new JPanel();
-        buttonPanel.setLayout( new FlowLayout( FlowLayout.CENTER, 20, 10 ) );
+        // TOOLBAR (barra in alto)
+        JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false); // fissa la barra in alto
 
-        JButton nuovoBtn = new JButton( "Nuovo" );
-        JButton modificaBtn = new JButton( "Modifica" );
-        JButton eliminaBtn = new JButton( "Elimina" );
+        JButton nuovoBtn = new JButton("Nuovo");
+        JButton modificaBtn = new JButton("Modifica");
+        JButton eliminaBtn = new JButton("Elimina");
 
-        nuovoBtn.setPreferredSize( new Dimension( 200, 50 ) );
-        modificaBtn.setPreferredSize( new Dimension( 200, 50 ) );
-        eliminaBtn.setPreferredSize( new Dimension( 200, 50 ) );
+        // (Opzionale) Aggiungi icone se disponibili
+        try {
+            nuovoBtn.setIcon(new ImageIcon("icons/nuovo.png"));
+            modificaBtn.setIcon(new ImageIcon("icons/modifica.png"));
+            eliminaBtn.setIcon(new ImageIcon("icons/elimina.png"));
+        } catch (Exception e) {
+            System.out.println("Icone non trovate, continuando senza.");
+        }
 
-        buttonPanel.add( nuovoBtn );
-        buttonPanel.add( modificaBtn );
-        buttonPanel.add( eliminaBtn );
+        // Aggiungi bottoni alla toolbar
+        toolBar.add(nuovoBtn);
+        toolBar.add(modificaBtn);
+        toolBar.add(eliminaBtn);
 
-        nuovoBtn.addActionListener( new ActionListener() {
-            public void actionPerformed( ActionEvent e ) {
+        // LISTENERS
+        nuovoBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 Persona nuovaPersona = new Persona("", "", "", "", 0);
-                EditorPersona editor = new EditorPersona( MainWindow.this, nuovaPersona );
-                editor.setVisible( true );
+                EditorPersona editor = new EditorPersona(MainWindow.this, nuovaPersona);
+                editor.setVisible(true);
                 if (editor.isConfermato()) {
                     rubrica.aggiungiPersona(nuovaPersona);
                     aggiornaTabella();
                 }
-                // System.out.println( "Nuova persona: " + nuovaPersona + "\nid: " + rubrica.getIndexPersona( nuovaPersona ) );
             }
-        }
-        );
+        });
 
-        modificaBtn.addActionListener( new ActionListener() {
-            public void actionPerformed( ActionEvent e ) {
+        modificaBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 int selectedRow = tabellaRubrica.getSelectedRow();
-                if ( selectedRow == -1 ) {
+                if (selectedRow == -1) {
                     JOptionPane.showMessageDialog(MainWindow.this,
                             "Seleziona una persona da modificare.",
                             "Nessuna selezione",
                             JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-                Persona modificaPersona = modificaPersona = rubrica.getRubrica().get( selectedRow );
-                EditorPersona editor = new EditorPersona( MainWindow.this, modificaPersona );
-                editor.setVisible( true );
+                Persona modificaPersona = rubrica.getRubrica().get(selectedRow);
+                EditorPersona editor = new EditorPersona(MainWindow.this, modificaPersona);
+                editor.setVisible(true);
                 aggiornaTabella();
             }
-        }
-        );
+        });
 
-        eliminaBtn.addActionListener( new ActionListener() {
-            public void actionPerformed( ActionEvent e ) {
+        eliminaBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 int selectedRow = tabellaRubrica.getSelectedRow();
-                if ( selectedRow == -1 ) {
+                if (selectedRow == -1) {
                     JOptionPane.showMessageDialog(MainWindow.this,
                             "Seleziona una persona da eliminare.",
                             "Nessuna selezione",
-                            JOptionPane.WARNING_MESSAGE );
+                            JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-                Persona eliminaPersona = rubrica.getRubrica().get( selectedRow );
+                Persona eliminaPersona = rubrica.getRubrica().get(selectedRow);
                 int conferma = JOptionPane.showConfirmDialog(
                         MainWindow.this,
                         "Eliminare la persona " + eliminaPersona.getNome() + " " + eliminaPersona.getCognome() + "?",
                         "Conferma eliminazione",
                         JOptionPane.YES_NO_OPTION
                 );
-                if ( conferma == JOptionPane.YES_OPTION ) {
-                    Rubrica.getInstance().rimuoviPersona( eliminaPersona );
+                if (conferma == JOptionPane.YES_OPTION) {
+                    Rubrica.getInstance().rimuoviPersona(eliminaPersona);
                     aggiornaTabella();
                 }
             }
-        }
-        );
+        });
 
-        setLayout( new BorderLayout() );
-        add( scrollPane, BorderLayout.CENTER );
-        add( buttonPanel, BorderLayout.SOUTH );
+        // LAYOUT
+        setLayout(new BorderLayout());
+        add(toolBar, BorderLayout.NORTH);       // 👈 NUOVO
+        add(scrollPane, BorderLayout.CENTER);   // tabella centrale
         aggiornaTabella();
 
-        setVisible( true );
+        setVisible(true);
     }
 
     public void aggiornaTabella() {
         model.setRowCount(0);
-        for ( Persona p : Rubrica.getInstance().getRubrica() ) {
+        for (Persona p : Rubrica.getInstance().getRubrica()) {
             Object[] row = {
                     p.getNome(),
                     p.getCognome(),
@@ -125,17 +127,17 @@ public class MainWindow extends JFrame {
                     p.getTelefono(),
                     p.getEta()
             };
-            model.addRow( row );
+            model.addRow(row);
         }
-        try{
-            RubricaDAO.saveAllToFolder( rubrica.getRubrica() );
+        try {
+            RubricaDAO.saveAllToFolder(rubrica.getRubrica());
         } catch (IOException e) {
             return;
         }
     }
-/*
-    public static void main(String[] args) {
 
+    /*
+    public static void main(String[] args) {
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -147,5 +149,6 @@ public class MainWindow extends JFrame {
             e.printStackTrace();
         }
         SwingUtilities.invokeLater(() -> new MainWindow());
-    }*/
+    }
+    */
 }
