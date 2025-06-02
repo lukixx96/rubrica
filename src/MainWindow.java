@@ -3,7 +3,6 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class MainWindow extends JFrame {
@@ -134,7 +133,7 @@ public class MainWindow extends JFrame {
             return;
         }
     }
-
+/*
     public static void main(String[] args) {
 
         try {
@@ -148,5 +147,5 @@ public class MainWindow extends JFrame {
             e.printStackTrace();
         }
         SwingUtilities.invokeLater(() -> new MainWindow());
-    }
+    }*/
 }
